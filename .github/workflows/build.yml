@@ -13,43 +13,43 @@ jobs:
         config:
         - {
             name: "x86_64 posix sjlj",
-            artifact: "x86_64-${{ github.ref }}-release-posix-sjlj-rt_v9-rev0.7z",
-            build_cmd: "--mode=gcc-${{ github.ref }} --buildroot=buildroot --jobs=4 --rev=0 --rt-version=v9 --threads=posix --exceptions=sjlj --arch=x86_64 --bin-compress --enable-languages=c,c++"
+            artifact: "x86_64-${{ github.ref_name }}-release-posix-sjlj-rt_v9-rev0.7z",
+            build_cmd: "--mode=gcc-${{ github.ref_name }} --buildroot=buildroot --jobs=4 --rev=0 --rt-version=v9 --threads=posix --exceptions=sjlj --arch=x86_64 --bin-compress --enable-languages=c,c++"
           }
         - {
             name: "x86_64 posix seh",
-            artifact: "x86_64-${{ github.ref }}-release-posix-seh-rt_v9-rev0.7z",
-            build_cmd: "--mode=gcc-${{ github.ref }} --buildroot=buildroot --jobs=4 --rev=0 --rt-version=v9 --threads=posix --exceptions=seh --arch=x86_64 --bin-compress --enable-languages=c,c++"
+            artifact: "x86_64-${{ github.ref_name }}-release-posix-seh-rt_v9-rev0.7z",
+            build_cmd: "--mode=gcc-${{ github.ref_name }} --buildroot=buildroot --jobs=4 --rev=0 --rt-version=v9 --threads=posix --exceptions=seh --arch=x86_64 --bin-compress --enable-languages=c,c++"
           }
         - {
             name: "x86_64 win32 sjlj",
-            artifact: "x86_64-${{ github.ref }}-release-win32-sjlj-rt_v9-rev0.7z",
-            build_cmd: "--mode=gcc-${{ github.ref }} --buildroot=buildroot --jobs=4 --rev=0 --rt-version=v9 --threads=win32 --exceptions=sjlj --arch=x86_64 --bin-compress --enable-languages=c,c++"
+            artifact: "x86_64-${{ github.ref_name }}-release-win32-sjlj-rt_v9-rev0.7z",
+            build_cmd: "--mode=gcc-${{ github.ref_name }} --buildroot=buildroot --jobs=4 --rev=0 --rt-version=v9 --threads=win32 --exceptions=sjlj --arch=x86_64 --bin-compress --enable-languages=c,c++"
           }
         - {
             name: "x86_64 win32 seh",
-            artifact: "x86_64-${{ github.ref }}-release-win32-seh-rt_v9-rev0.7z",
-            build_cmd: "--mode=gcc-${{ github.ref }} --buildroot=buildroot --jobs=4 --rev=0 --rt-version=v9 --threads=win32 --exceptions=seh --arch=x86_64 --bin-compress --enable-languages=c,c++"
+            artifact: "x86_64-${{ github.ref_name }}-release-win32-seh-rt_v9-rev0.7z",
+            build_cmd: "--mode=gcc-${{ github.ref_name }} --buildroot=buildroot --jobs=4 --rev=0 --rt-version=v9 --threads=win32 --exceptions=seh --arch=x86_64 --bin-compress --enable-languages=c,c++"
           }
         - {
             name: "i686 posix sjlj",
-            artifact: "i686-${{ github.ref }}-release-posix-sjlj-rt_v9-rev0.7z",
-            build_cmd: "--mode=gcc-${{ github.ref }} --buildroot=buildroot --jobs=4 --rev=0 --rt-version=v9 --threads=posix --exceptions=sjlj --arch=i686 --bin-compress --enable-languages=c,c++"
+            artifact: "i686-${{ github.ref_name }}-release-posix-sjlj-rt_v9-rev0.7z",
+            build_cmd: "--mode=gcc-${{ github.ref_name }} --buildroot=buildroot --jobs=4 --rev=0 --rt-version=v9 --threads=posix --exceptions=sjlj --arch=i686 --bin-compress --enable-languages=c,c++"
           }
         - {
             name: "i686 posix dwarf",
-            artifact: "i686-${{ github.ref }}-release-posix-dwarf-rt_v9-rev0.7z",
-            build_cmd: "--mode=gcc-${{ github.ref }} --buildroot=buildroot --jobs=4 --rev=0 --rt-version=v9 --threads=posix --exceptions=dwarf --arch=i686 --bin-compress --enable-languages=c,c++"
+            artifact: "i686-${{ github.ref_name }}-release-posix-dwarf-rt_v9-rev0.7z",
+            build_cmd: "--mode=gcc-${{ github.ref_name }} --buildroot=buildroot --jobs=4 --rev=0 --rt-version=v9 --threads=posix --exceptions=dwarf --arch=i686 --bin-compress --enable-languages=c,c++"
           }
         - {
             name: "i686 win32 sjlj",
-            artifact: "i686-${{ github.ref }}-release-win32-sjlj-rt_v9-rev0.7z",
-            build_cmd: "--mode=gcc-${{ github.ref }} --buildroot=buildroot --jobs=4 --rev=0 --rt-version=v9 --threads=win32 --exceptions=sjlj --arch=i686 --bin-compress --enable-languages=c,c++"
+            artifact: "i686-${{ github.ref_name }}-release-win32-sjlj-rt_v9-rev0.7z",
+            build_cmd: "--mode=gcc-${{ github.ref_name }} --buildroot=buildroot --jobs=4 --rev=0 --rt-version=v9 --threads=win32 --exceptions=sjlj --arch=i686 --bin-compress --enable-languages=c,c++"
           }
         - {
             name: "i686 win32 dwarf",
-            artifact: "i686-${{ github.ref }}-release-win32-dwarf-rt_v9-rev0.7z",
-            build_cmd: "--mode=gcc-${{ github.ref }} --buildroot=buildroot --jobs=4 --rev=0 --rt-version=v9 --threads=win32 --exceptions=dwarf --arch=i686 --bin-compress --enable-languages=c,c++"
+            artifact: "i686-${{ github.ref_name }}-release-win32-dwarf-rt_v9-rev0.7z",
+            build_cmd: "--mode=gcc-${{ github.ref_name }} --buildroot=buildroot --jobs=4 --rev=0 --rt-version=v9 --threads=win32 --exceptions=dwarf --arch=i686 --bin-compress --enable-languages=c,c++"
           }
 
     steps:
@@ -108,35 +108,35 @@ jobs:
         config:
         - {
             name: "x86_64 posix sjlj",
-            artifact: "x86_64-${{ github.ref }}-release-posix-sjlj-rt_v9-rev0.7z"
+            artifact: "x86_64-${{ github.ref_name }}-release-posix-sjlj-rt_v9-rev0.7z"
           }
         - {
             name: "x86_64 posix seh",
-            artifact: "x86_64-${{ github.ref }}-release-posix-seh-rt_v9-rev0.7z"
+            artifact: "x86_64-${{ github.ref_name }}-release-posix-seh-rt_v9-rev0.7z"
           }
         - {
             name: "x86_64 win32 sjlj",
-            artifact: "x86_64-${{ github.ref }}-release-win32-sjlj-rt_v9-rev0.7z"
+            artifact: "x86_64-${{ github.ref_name }}-release-win32-sjlj-rt_v9-rev0.7z"
           }
         - {
             name: "x86_64 win32 seh",
-            artifact: "x86_64-${{ github.ref }}-release-win32-seh-rt_v9-rev0.7z"
+            artifact: "x86_64-${{ github.ref_name }}-release-win32-seh-rt_v9-rev0.7z"
           }
         - {
             name: "i686 posix sjlj",
-            artifact: "i686-${{ github.ref }}-release-posix-sjlj-rt_v9-rev0.7z"
+            artifact: "i686-${{ github.ref_name }}-release-posix-sjlj-rt_v9-rev0.7z"
           }
         - {
             name: "i686 posix dwarf",
-            artifact: "i686-${{ github.ref }}-release-posix-dwarf-rt_v9-rev0.7z"
+            artifact: "i686-${{ github.ref_name }}-release-posix-dwarf-rt_v9-rev0.7z"
           }
         - {
             name: "i686 win32 sjlj",
-            artifact: "i686-${{ github.ref }}-release-win32-sjlj-rt_v9-rev0.7z"
+            artifact: "i686-${{ github.ref_name }}-release-win32-sjlj-rt_v9-rev0.7z"
           }
         - {
             name: "i686 win32 dwarf",
-            artifact: "i686-${{ github.ref }}-release-win32-dwarf-rt_v9-rev0.7z"
+            artifact: "i686-${{ github.ref_name }}-release-win32-dwarf-rt_v9-rev0.7z"
           }
 
     needs: release
