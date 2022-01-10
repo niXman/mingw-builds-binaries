@@ -1,11 +1,13 @@
 name: x86_64 and i686 release builds
 
-on: [push]
+on:
+  push:
+    tags:
+      - "v*-rev*"
 
 jobs:
   split-tag:
     runs-on: ubuntu-latest
-    if: contains(github.ref, 'tags/')
     outputs:
       gcc-version: ${{ steps.get-gcc-version.outputs.version }}
       mingw-rev: ${{ steps.get-mingw-revision.outputs.rev }}
@@ -17,52 +19,18 @@ jobs:
 
   build:
     needs: split-tag
-    name: ${{ matrix.config.name }}
     runs-on: windows-latest
     strategy:
       fail-fast: false
       matrix:
-        config:
-        - {
-            name: "x86_64 posix sjlj",
-            artifact: "x86_64-${{ needs.split-tag.outputs.gcc-version }}-release-posix-sjlj-rt_v9-rev${{ needs.split-tag.outputs.mingw-rev }}.7z",
-            build_cmd: "--mode=gcc-${{ needs.split-tag.outputs.gcc-version }} --buildroot=buildroot --jobs=4 --rev=${{ needs.split-tag.outputs.mingw-rev }} --rt-version=v9 --threads=posix --exceptions=sjlj --arch=x86_64 --bin-compress --enable-languages=c,c++"
-          }
-        - {
-            name: "x86_64 posix seh",
-            artifact: "x86_64-${{ needs.split-tag.outputs.gcc-version }}-release-posix-seh-rt_v9-rev${{ needs.split-tag.outputs.mingw-rev }}.7z",
-            build_cmd: "--mode=gcc-${{ needs.split-tag.outputs.gcc-version }} --buildroot=buildroot --jobs=4 --rev=${{ needs.split-tag.outputs.mingw-rev }} --rt-version=v9 --threads=posix --exceptions=seh --arch=x86_64 --bin-compress --enable-languages=c,c++"
-          }
-        - {
-            name: "x86_64 win32 sjlj",
-            artifact: "x86_64-${{ needs.split-tag.outputs.gcc-version }}-release-win32-sjlj-rt_v9-rev${{ needs.split-tag.outputs.mingw-rev }}.7z",
-            build_cmd: "--mode=gcc-${{ needs.split-tag.outputs.gcc-version }} --buildroot=buildroot --jobs=4 --rev=${{ needs.split-tag.outputs.mingw-rev }} --rt-version=v9 --threads=win32 --exceptions=sjlj --arch=x86_64 --bin-compress --enable-languages=c,c++"
-          }
-        - {
-            name: "x86_64 win32 seh",
-            artifact: "x86_64-${{ needs.split-tag.outputs.gcc-version }}-release-win32-seh-rt_v9-rev${{ needs.split-tag.outputs.mingw-rev }}.7z",
-            build_cmd: "--mode=gcc-${{ needs.split-tag.outputs.gcc-version }} --buildroot=buildroot --jobs=4 --rev=${{ needs.split-tag.outputs.mingw-rev }} --rt-version=v9 --threads=win32 --exceptions=seh --arch=x86_64 --bin-compress --enable-languages=c,c++"
-          }
-        - {
-            name: "i686 posix sjlj",
-            artifact: "i686-${{ needs.split-tag.outputs.gcc-version }}-release-posix-sjlj-rt_v9-rev${{ needs.split-tag.outputs.mingw-rev }}.7z",
-            build_cmd: "--mode=gcc-${{ needs.split-tag.outputs.gcc-version }} --buildroot=buildroot --jobs=4 --rev=${{ needs.split-tag.outputs.mingw-rev }} --rt-version=v9 --threads=posix --exceptions=sjlj --arch=i686 --bin-compress --enable-languages=c,c++"
-          }
-        - {
-            name: "i686 posix dwarf",
-            artifact: "i686-${{ needs.split-tag.outputs.gcc-version }}-release-posix-dwarf-rt_v9-rev${{ needs.split-tag.outputs.mingw-rev }}.7z",
-            build_cmd: "--mode=gcc-${{ needs.split-tag.outputs.gcc-version }} --buildroot=buildroot --jobs=4 --rev=${{ needs.split-tag.outputs.mingw-rev }} --rt-version=v9 --threads=posix --exceptions=dwarf --arch=i686 --bin-compress --enable-languages=c,c++"
-          }
-        - {
-            name: "i686 win32 sjlj",
-            artifact: "i686-${{ needs.split-tag.outputs.gcc-version }}-release-win32-sjlj-rt_v9-rev${{ needs.split-tag.outputs.mingw-rev }}.7z",
-            build_cmd: "--mode=gcc-${{ needs.split-tag.outputs.gcc-version }} --buildroot=buildroot --jobs=4 --rev=${{ needs.split-tag.outputs.mingw-rev }} --rt-version=v9 --threads=win32 --exceptions=sjlj --arch=i686 --bin-compress --enable-languages=c,c++"
-          }
-        - {
-            name: "i686 win32 dwarf",
-            artifact: "i686-${{ needs.split-tag.outputs.gcc-version }}-release-win32-dwarf-rt_v9-rev${{ needs.split-tag.outputs.mingw-rev }}.7z",
-            build_cmd: "--mode=gcc-${{ needs.split-tag.outputs.gcc-version }} --buildroot=buildroot --jobs=4 --rev=${{ needs.split-tag.outputs.mingw-rev }} --rt-version=v9 --threads=win32 --exceptions=dwarf --arch=i686 --bin-compress --enable-languages=c,c++"
-          }
+        arch: [x86_64, i686]
+        threads: [posix, win32]
+        exceptions: [sjlj, seh, dwarf]
+        exclude:
+          - arch: x86_64
+            exceptions: dwarf
+          - arch: i686
+            exceptions: seh
 
     steps:
     - uses: actions/checkout@v2
@@ -76,13 +44,12 @@ jobs:
 
     - name: Build
       shell: msys2 {0}
-      run: ./build ${{ matrix.config.build_cmd }}
+      run: ./build --mode=gcc-${{ needs.split-tag.outputs.gcc-version }} --buildroot=buildroot --jobs=4 --rev=${{ needs.split-tag.outputs.mingw-rev }} --rt-version=v9 --threads=${{ matrix.threads }} --exceptions=${{ matrix.exceptions }} --arch=${{ matrix.arch }} --bin-compress --enable-languages=c,c++
 
     - name: Upload
       uses: actions/upload-artifact@v1
       with:
-        path: ./buildroot/archives/${{ matrix.config.artifact }}
-        name: ${{ matrix.config.artifact }}
+        path: ./buildroot/archives/*
 
   release:
     runs-on: ubuntu-latest
@@ -100,82 +67,13 @@ jobs:
         draft: false
         prerelease: false
 
-    - name: Store Release url
-      run: |
-        echo "${{ steps.create_release.outputs.upload_url }}" > ./upload_url
-
-    - uses: actions/upload-artifact@v1
-      with:
-        path: ./upload_url
-        name: upload_url
-
-  publish:
-    if: contains(github.ref, 'tags/')
-    name: ${{ matrix.config.name }}
-    runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false
-      matrix:
-        config:
-        - {
-            name: "x86_64 posix sjlj",
-            artifact: "x86_64-${{ needs.split-tag.outputs.gcc-version }}-release-posix-sjlj-rt_v9-rev${{ needs.split-tag.outputs.mingw-rev }}.7z"
-          }
-        - {
-            name: "x86_64 posix seh",
-            artifact: "x86_64-${{ needs.split-tag.outputs.gcc-version }}-release-posix-seh-rt_v9-rev${{ needs.split-tag.outputs.mingw-rev }}.7z"
-          }
-        - {
-            name: "x86_64 win32 sjlj",
-            artifact: "x86_64-${{ needs.split-tag.outputs.gcc-version }}-release-win32-sjlj-rt_v9-rev${{ needs.split-tag.outputs.mingw-rev }}.7z"
-          }
-        - {
-            name: "x86_64 win32 seh",
-            artifact: "x86_64-${{ needs.split-tag.outputs.gcc-version }}-release-win32-seh-rt_v9-rev${{ needs.split-tag.outputs.mingw-rev }}.7z"
-          }
-        - {
-            name: "i686 posix sjlj",
-            artifact: "i686-${{ needs.split-tag.outputs.gcc-version }}-release-posix-sjlj-rt_v9-rev${{ needs.split-tag.outputs.mingw-rev }}.7z"
-          }
-        - {
-            name: "i686 posix dwarf",
-            artifact: "i686-${{ needs.split-tag.outputs.gcc-version }}-release-posix-dwarf-rt_v9-rev${{ needs.split-tag.outputs.mingw-rev }}.7z"
-          }
-        - {
-            name: "i686 win32 sjlj",
-            artifact: "i686-${{ needs.split-tag.outputs.gcc-version }}-release-win32-sjlj-rt_v9-rev${{ needs.split-tag.outputs.mingw-rev }}.7z"
-          }
-        - {
-            name: "i686 win32 dwarf",
-            artifact: "i686-${{ needs.split-tag.outputs.gcc-version }}-release-win32-dwarf-rt_v9-rev${{ needs.split-tag.outputs.mingw-rev }}.7z"
-          }
-
-    needs: [release,split-tag]
-
-    steps:
     - name: Download artifact
       uses: actions/download-artifact@v1
       with:
-        name: ${{ matrix.config.artifact }}
         path: ./
-
-    - name: Download URL
-      uses: actions/download-artifact@v1
-      with:
-        name: upload_url
-        path: ./
-    - id: set_upload_url
-      run: |
-        upload_url=`cat ./upload_url`
-        echo ::set-output name=upload_url::$upload_url
 
     - name: Upload to Release
       id: upload_to_release
-      uses: actions/upload-release-asset@v1.0.1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      uses: softprops/action-gh-release@v1
       with:
-        upload_url: ${{ steps.set_upload_url.outputs.upload_url }}
-        asset_path: ./${{ matrix.config.artifact }}
-        asset_name: ${{ matrix.config.artifact }}
-        asset_content_type: application/x-gtar
+        files: "*.7z"
