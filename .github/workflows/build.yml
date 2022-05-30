@@ -45,6 +45,12 @@ jobs:
       with:
         update: true
 
+    - name: Compress working directory
+      shell: msys2 {0}
+      run: |
+        export MSYS2_ARG_CONV_EXCL=*
+        compact /c /s:`pwd -W`
+
     - name: Build
       shell: msys2 {0}
       run: ./build --mode=gcc-${{ needs.split-tag.outputs.gcc-version }} --buildroot=buildroot --jobs=4 --rev=${{ needs.split-tag.outputs.mingw-rev }} --rt-version=${{ needs.split-tag.outputs.rt-version }} --threads=${{ matrix.threads }} --exceptions=${{ matrix.exceptions }} --arch=${{ matrix.arch }} --bin-compress --enable-languages=c,c++,fortran
