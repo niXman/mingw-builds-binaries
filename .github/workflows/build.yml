@@ -22,13 +22,13 @@ jobs:
 
   build:
     needs: split-tag
-    runs-on: windows-latest
+    runs-on: windows-2019
     strategy:
       fail-fast: false
       matrix:
         arch: [x86_64, i686]
         threads: [posix, win32]
-        exceptions: [sjlj, seh, dwarf]
+        exceptions: [seh, dwarf]
         exclude:
           - arch: x86_64
             exceptions: dwarf
