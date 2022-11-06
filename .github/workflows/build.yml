@@ -14,11 +14,11 @@ jobs:
       mingw-rev: ${{ steps.get-mingw-revision.outputs.rev }}
     steps:
       - id: get-gcc-version
-        run: echo "::set-output name=version::$(echo ${{ github.ref_name }} | cut -d- -f1)"
+        run: echo "version=$(echo ${{ github.ref_name }} | cut -d- -f1)" >> $GITHUB_OUTPUT
       - id: get-rt-version
-        run: echo "::set-output name=version::$(echo ${{ github.ref_name }} | cut -d- -f2 | cut -c4-)"
+        run: echo "version=$(echo ${{ github.ref_name }} | cut -d- -f2 | cut -c4-)" >> $GITHUB_OUTPUT
       - id: get-mingw-revision
-        run: echo "::set-output name=rev::$(echo ${{ github.ref_name }} | cut -d- -f3 | cut -c4-)"
+        run: echo "rev=$(echo ${{ github.ref_name }} | cut -d- -f3 | cut -c4-)" >> $GITHUB_OUTPUT
 
   build:
     needs: split-tag
@@ -50,7 +50,7 @@ jobs:
       run: ./build --mode=gcc-${{ needs.split-tag.outputs.gcc-version }} --buildroot=/c/buildroot --jobs=4 --rev=${{ needs.split-tag.outputs.mingw-rev }} --rt-version=${{ needs.split-tag.outputs.rt-version }} --threads=${{ matrix.threads }} --exceptions=${{ matrix.exceptions }} --arch=${{ matrix.arch }} --bin-compress --enable-languages=c,c++,fortran
 
     - name: Upload
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v3
       with:
         name: 'archives'
         path: c:/buildroot/archives/
@@ -61,7 +61,7 @@ jobs:
 
     steps:
     - name: Download artifact
-      uses: actions/download-artifact@v2
+      uses: actions/download-artifact@v3
       with:
         name: 'archives'
         path: ./
