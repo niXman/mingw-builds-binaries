@@ -1,4 +1,4 @@
-# mingw-builds-binaries
+# MinGW-W64-binaries
 
 [![x86_64 and i686 release builds](https://github.com/niXman/mingw-builds-binaries/actions/workflows/build.yml/badge.svg)](https://github.com/niXman/mingw-builds-binaries/actions/workflows/build.yml)
 
