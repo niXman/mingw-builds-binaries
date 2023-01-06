@@ -2,7 +2,7 @@
 
 [![x86_64 and i686 release builds](https://github.com/niXman/mingw-builds-binaries/actions/workflows/build.yml/badge.svg)](https://github.com/niXman/mingw-builds-binaries/actions/workflows/build.yml)
 
-MinGW compiler binaries
+MinGW-W64 compiler binaries
 
 [MinGW-W64 online installer](https://github.com/Vuniverse0/mingwInstaller/releases/download/1.2.0/mingwInstaller.exe) ([VirusTotal](https://www.virustotal.com/gui/file/68214ff3d9ddd74538d7d96001173c952284b4c6b62608f6c3fcc447feca1a5d)), ([sources](https://github.com/Vuniverse0/mingwInstaller)).
 
