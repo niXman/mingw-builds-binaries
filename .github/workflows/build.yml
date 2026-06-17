@@ -65,7 +65,7 @@ jobs:
         --enable-languages=c,c++,fortran
 
     - name: Upload
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v7
       with:
         name: ${{ matrix.arch }}-${{ matrix.threads }}-${{ matrix.exceptions }}-${{ matrix.msvcrt }}
         path: c:/buildroot/archives/
@@ -76,7 +76,7 @@ jobs:
 
     steps:
     - name: Download artifact
-      uses: actions/download-artifact@v4
+      uses: actions/download-artifact@v8
       with:
         path: ./
         merge-multiple: true
