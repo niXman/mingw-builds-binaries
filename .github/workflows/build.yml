@@ -39,7 +39,7 @@ jobs:
             msvcrt: msvcrt
 
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v6
       with:
         repository: 'niXman/mingw-builds'
         ref: 'develop'
