@@ -20,8 +20,51 @@ jobs:
       - id: get-mingw-revision
         run: echo "rev=$(echo ${{ github.ref_name }} | cut -d- -f3 | cut -c4-)" >> $GITHUB_OUTPUT
 
-  build:
+  download:
     needs: split-tag
+    runs-on: windows-2022
+
+    steps:
+    - uses: actions/checkout@v6
+      with:
+        repository: 'niXman/mingw-builds'
+        ref: 'develop'
+
+    - uses: msys2/setup-msys2@v2
+      with:
+        update: true
+
+    - name: Download sources
+      shell: msys2 {0}
+      run: >-
+        ./build
+        --mode=gcc-${{ needs.split-tag.outputs.gcc-version }}
+        --buildroot=/c/buildroot
+        --jobs=4
+        --rev=${{ needs.split-tag.outputs.mingw-rev }}
+        --with-default-msvcrt=ucrt
+        --rt-version=${{ needs.split-tag.outputs.rt-version }}
+        --threads=mcf
+        --exceptions=seh
+        --arch=x86_64
+        --bin-compress
+        --enable-languages=c,c++,fortran
+        --logviewer-command=cat
+        --fetch-only
+
+    - name: Compress sources
+      run: 7z a src.7z src "-xr!.git"
+      working-directory: c:/buildroot
+
+    - name: Upload sources
+      uses: actions/upload-artifact@v7
+      with:
+        path: c:/buildroot/src.7z
+        compression-level: 0
+        archive: false
+
+  build:
+    needs: [split-tag, download]
     runs-on: windows-2022
     strategy:
       fail-fast: false
@@ -48,6 +91,16 @@ jobs:
       with:
         update: true
 
+    - name: Download sources
+      uses: actions/download-artifact@v8
+      with:
+        name: src.7z
+        path: c:/buildroot
+
+    - name: Extract sources
+      run: 7z x src.7z
+      working-directory: c:/buildroot
+
     - name: Build
       shell: msys2 {0}
       run: >-
@@ -63,11 +116,12 @@ jobs:
         --arch=${{ matrix.arch }}
         --bin-compress
         --enable-languages=c,c++,fortran
+        --logviewer-command=cat
 
     - name: Upload
       uses: actions/upload-artifact@v7
       with:
-        name: ${{ matrix.arch }}-${{ matrix.threads }}-${{ matrix.exceptions }}-${{ matrix.msvcrt }}
+        name: bin-${{ matrix.arch }}-${{ matrix.threads }}-${{ matrix.exceptions }}-${{ matrix.msvcrt }}
         path: c:/buildroot/archives/
 
   release:
@@ -78,6 +132,7 @@ jobs:
     - name: Download artifact
       uses: actions/download-artifact@v8
       with:
+        pattern: "bin-*"
         path: ./
         merge-multiple: true
 
